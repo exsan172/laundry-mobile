@@ -1,9 +1,97 @@
-import React from "react"
-import { View, StyleSheet, Text, TouchableOpacity, Image, TextInput } from 'react-native'
+import React, { useState, useEffect } from "react"
+import { View, StyleSheet, Text, TouchableOpacity, Image, TextInput, Alert, ActivityIndicator } from 'react-native'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import MMKVStorage, { useMMKVStorage } from "react-native-mmkv-storage";
+import { useIsFocused } from '@react-navigation/native'
+import { service } from '../config/index'
 
-const CreateStore = ({ navigation }) => {
+const storage = new MMKVStorage.Loader().initialize();
+const CreateStore = ({ route, navigation }) => {
+    const [store, setStore] = useState("")
+    const [price, setPrice] = useState("")
+    const [loadingLogin, setLoadingLogin] = useState("false")
+    const [token, setToken] = useMMKVStorage("user", storage, "null");
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        
+        if(isFocused) {
+            if(route.params !== undefined) {
+                setStore(route.params.cabang)
+                setPrice(route.params.price)
+            }
+        }
+
+    }, [isFocused])
+
+    const createStr = () => {
+        setLoadingLogin("true")
+        if(store !== "" && price !== "") {
+            service.postData("transaction/input-cabang", token, {
+                cabang : store,
+                price : price
+            }).then(res => {
+                if(res.data.statusCode !== 400) {
+                    setLoadingLogin("false")
+                    Alert.alert("Success", "congratulation, store created.", [
+                        {
+                            text: "OK",
+                            onPress : () => {
+                                navigation.navigate("ListStore")
+                            }
+                        }
+                    ])
+                    setStore("")
+                    setPrice("")
+                } else {
+                    setLoadingLogin("false")
+                    Alert.alert("Failed", "Please fill all correctly.")
+                }
+            }).catch(err => {
+                setLoadingLogin("false")
+                Alert.alert("Failed", err.message)
+            })
+        } else {
+            setLoadingLogin("false")
+            Alert.alert("Failed", "please fill store name and price.")
+        }
+    }
+
+    const updateStore = () => {
+        setLoadingLogin("true")
+        if(store !== "" && price !== "") {
+            service.postData("transaction/edit-cabang", token, {
+                id : route.params._id,
+                cabang : store,
+                price : price
+            }).then(res => {
+                if(res.data.statusCode !== 400) {
+                    setLoadingLogin("false")
+                    Alert.alert("Success", "congratulation, store updated.", [
+                        {
+                            text: "OK",
+                            onPress : () => {
+                                navigation.navigate("ListStore")
+                            }
+                        }
+                    ])
+                    setStore("")
+                    setPrice("")
+                } else {
+                    setLoadingLogin("false")
+                    Alert.alert("Failed", "Please fill all correctly.")
+                }
+            }).catch(err => {
+                setLoadingLogin("false")
+                Alert.alert("Failed", err.message)
+            })
+        } else {
+            setLoadingLogin("false")
+            Alert.alert("Failed", "please fill store name and price.")
+        }
+    }
+
     return (
         <View style={style.container}>
             <View style={style.containerForm}>
@@ -15,7 +103,7 @@ const CreateStore = ({ navigation }) => {
                         backgroundColor: '#ecf0f1',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        width:30,
+                        width:35,
                         borderRightColor: '#95a5a6',
                         borderRightWidth:1
                     }}>
@@ -25,6 +113,9 @@ const CreateStore = ({ navigation }) => {
                         <TextInput
                             style={style.inputFiled}
                             placeholder="Store"
+                            placeholderTextColor="#95a5a6"
+                            onChangeText={(value) => setStore(value)}
+                            value={store}
                         />
                     </View>
                 </View>
@@ -36,7 +127,7 @@ const CreateStore = ({ navigation }) => {
                         backgroundColor: '#ecf0f1',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        width:30,
+                        width:35,
                         borderRightColor: '#95a5a6',
                         borderRightWidth:1
                     }}>
@@ -46,13 +137,21 @@ const CreateStore = ({ navigation }) => {
                         <TextInput
                             style={style.inputFiled}
                             placeholder="Price / kilogram"
+                            placeholderTextColor="#95a5a6"
+                            onChangeText={(value) => setPrice(value)}
+                            value={price.toString()}
+                            keyboardType="numeric"
                         />
                     </View>
                 </View>
                 <View style={{
                     marginTop: 15
                 }}>
-                    <TouchableOpacity style={style.loginButton} onPress={() => navigation.navigate('HomeRoutes')}>
+                    <TouchableOpacity style={style.loginButton} onPress={() => route.params !== undefined ? updateStore() : createStr()}>
+                        {
+                            loadingLogin === "true" &&
+                            <ActivityIndicator size="small" color="#3498db" style={{marginRight:10}}/>
+                        }
                         <Text style={style.loginText}>Save</Text>
                     </TouchableOpacity>
                 </View>
@@ -80,7 +179,8 @@ const style = StyleSheet.create({
         backgroundColor : '#ffffff',
         height : hp('5%'),
         width : wp('60%'),
-        fontSize : hp('1.5%')
+        fontSize : hp('1.5%'),
+        color: '#34495e'
     },
     loginButton : {
         backgroundColor: '#2980b9',
@@ -88,7 +188,8 @@ const style = StyleSheet.create({
         alignItems : 'center',
         justifyContent : 'center',
         fontSize : hp('1.5%'),
-        width : wp('67%'),
+        width : wp('69%'),
+        flexDirection:'row'
     },
     loginText : {
         color: '#ffffff'
