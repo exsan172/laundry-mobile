@@ -104,7 +104,7 @@ const TransactionScreen = ({ navigation }) => {
                         <Text style={{fontSize:10, color:'#34495e'}}>Show data</Text>
                     </View>
                     <View style={{flexDirection:'row', marginTop:5}}>
-                        <TouchableOpacity style={{flexDirection:'row', alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5, width:100}} onPress={() => filterToday()}>
+                        <TouchableOpacity style={{flexDirection:'row', height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5, width:100}} onPress={() => filterToday()}>
                             <Text style={{fontSize:12, color:'#ffffff'}}>Today</Text>
                         </TouchableOpacity>
                     </View>
@@ -115,7 +115,7 @@ const TransactionScreen = ({ navigation }) => {
                     </View>
                     <View style={{flexDirection:'row'}}>
                         <View style={{marginRight:0, marginVertical:5}}>
-                            <TouchableOpacity style={{flexDirection:'row', alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5}} onPress={() => setOpen(true)}>
+                            <TouchableOpacity style={{flexDirection:'row', height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5}} onPress={() => setOpen(true)}>
                                 <Icon name="calendar" width="20" color="#ffffff" style={{ marginRight:5 }}/>
                                 <Text style={{fontSize:12, color:'#ffffff'}}>From</Text>
                             </TouchableOpacity>
@@ -134,7 +134,7 @@ const TransactionScreen = ({ navigation }) => {
                             />
                         </View>
                         <View style={{marginLeft:2, marginVertical:5}}>
-                            <TouchableOpacity style={{flexDirection:'row', alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5}} onPress={() => setOpenTo(true)}>
+                            <TouchableOpacity style={{flexDirection:'row', height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5}} onPress={() => setOpenTo(true)}>
                                 <Icon name="calendar" width="20" color="#ffffff" style={{ marginRight:5 }}/>
                                 <Text style={{fontSize:12, color:'#ffffff'}}>To</Text>
                             </TouchableOpacity>
@@ -153,7 +153,7 @@ const TransactionScreen = ({ navigation }) => {
                             />
                         </View>
                         <View style={{marginVertical:5, marginHorizontal:2}}>
-                            <TouchableOpacity style={{flexDirection:'row', alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:7}} onPress={() => filterByDate()}>
+                            <TouchableOpacity style={{flexDirection:'row', height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:7}} onPress={() => filterByDate()}>
                                 <Icon name="search" width="20" color="#ffffff"/>
                             </TouchableOpacity>
                         </View>
