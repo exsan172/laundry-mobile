@@ -158,7 +158,8 @@ const style = StyleSheet.create({
     },
     textBtn : {
         color: '#ffffff',
-        fontSize: 12
+        fontSize: 12,
+        fontWeight:'bold'
     }
 })
 

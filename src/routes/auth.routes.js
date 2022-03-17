@@ -1,7 +1,9 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RecoilRoot } from 'recoil'
+import SplashScreen from  "react-native-splash-screen";
+
 
 // screen
 import LoginScreen from '../views/login.screen';
@@ -11,6 +13,7 @@ import HomeRoutes from './home.routes';
 import CreateStore from '../views/create_store.screen';
 import CreateTransaction from '../views/create_transaction.screen';
 import CreateEmploye from '../views/create_employe.screen';
+import PublicRegister from '../views/public_register'
 
 const Stack = createNativeStackNavigator();
 const AuthRoutes = () => {
@@ -36,6 +39,21 @@ const AuthRoutes = () => {
 					}}
 					name="ForgotPassword"
 					component={ForgotPassword}
+				/>
+				<Stack.Screen
+					options={{
+						title: "Register",
+						headerTitleStyle : {
+							fontSize: 13
+						},
+						headerTitleAlign : "center",
+						headerTintColor : "#ffffff",
+						headerStyle : {
+							backgroundColor : "#3498db"
+						}
+					}}
+					name="Register"
+					component={PublicRegister}
 				/>
 				<Stack.Screen
 					options={{ headerShown:false }} 
@@ -98,6 +116,11 @@ const AuthRoutes = () => {
 }
 
 const App = () => {
+
+	useEffect(()=>{
+		SplashScreen.hide();
+	}, [])
+
 	return (
 		<RecoilRoot>
 			<AuthRoutes/>

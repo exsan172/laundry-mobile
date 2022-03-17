@@ -108,8 +108,8 @@ const ListStore = ({ navigation }) => {
                             )
                         })
                     :
-                    <View style={{justifyContent:'center', marginTop:50, alignItems:'center', color:'#34495e'}}>
-                        <Text style={{fontSize:12}}>Store is empty, create store in top right corner.</Text>
+                    <View style={{justifyContent:'center', marginTop:200, alignItems:'center', color:'#34495e'}}>
+                        <Text style={{fontSize:12, color:'#34495e'}}>Store is empty, create store in top right corner.</Text>
                     </View>
                 }
             </ScrollView>

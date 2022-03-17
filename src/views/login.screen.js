@@ -124,6 +124,13 @@ const LoginScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{
+                    marginTop: 15
+                }}>
+                    <TouchableOpacity style={style.loginButton} onPress={() => navigation.navigate('Register')}>
+                        <Text style={style.loginText}>Create Account</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{
                     marginTop: 20
                 }}>
                     <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
