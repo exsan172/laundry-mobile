@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { View, StyleSheet, Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, Button } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator, PermissionsAndroid, refreshControl } from 'react-native'
 import MMKVStorage, { useMMKVStorage } from "react-native-mmkv-storage";
 import { useRecoilState } from 'recoil'
 import { useIsFocused } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import { service } from '../config/index'
 import { profitToday } from '../stores/home.store'
 import { Transaction, toDate, fromDate } from '../stores/home.store'
 import DatePicker from 'react-native-date-picker'
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 const storage = new MMKVStorage.Loader().initialize();
 const TransactionScreen = ({ navigation }) => {
@@ -26,6 +27,83 @@ const TransactionScreen = ({ navigation }) => {
     const [openTo, setOpenTo] = useState(false)
     const [frmDate, setFrmDate] = useRecoilState(fromDate)
     const [tooDate, setTodate] = useRecoilState(toDate)
+
+    const isPermitted = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'External Storage Write Permission',
+                        message: 'App needs access to Storage data',
+                    },
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } catch (err) {
+                alert('Write permission err', err);
+                return false;
+            }
+        
+        } else {
+            return true;
+        }
+    };
+
+    const createPDF = async () => {
+        if (await isPermitted()) {
+            let html = ""
+            html += 
+            `
+                <h1>Report Order</h1>
+                <p>
+                    Total Transaction in this report : 
+                    <b>
+                        ${transaction.length}
+                    </b>
+                </p>
+                <p>
+                    Total pay in this report : 
+                    <b>
+                        + ${rupiahFormat.convert(profit)}
+                    </b>
+                </p>
+                <br/>
+                <br/>
+                <table style="width:100%">
+                    <tr style="background-color:gray; color:white;">
+                        <td style="padding:7px">Store</td>
+                        <td style="padding:7px">Customer</td>
+                        <td style="padding:7px">Total Pay</td>
+                        <td style="padding:7px">Total Weight (Kg)</td>
+                        <td style="padding:7px">Order on</td>
+                    </tr>
+            `
+            for(const i in transaction) {
+                html +=
+                `
+                    <tr>
+                        <td style="padding:7px">${transaction[i].cabang}</td>
+                        <td style="padding:7px">${transaction[i].name}</td>
+                        <td style="padding:7px">${rupiahFormat.convert(transaction[i].total_price)}</td>
+                        <td style="padding:7px; text-align:center;">${transaction[i].total_weight}</td>
+                        <td style="padding:7px">${moment(transaction[i].createdAt).format("YYYY-MM-D")}</td>
+                    </tr>
+                `
+            }
+
+            html +=
+            `</table>`
+
+            let options = {
+                html: html,
+                fileName: `Report from ${frmDate} to ${tooDate}`,
+                directory: 'Downloads',
+            };
+        
+            let file = await RNHTMLtoPDF.convert(options)
+            Alert.alert("Report saved", file.filePath);
+        }
+    }
 
     useEffect(() => {
         if(isFocused){
@@ -96,6 +174,10 @@ const TransactionScreen = ({ navigation }) => {
         setTodate(convertDateTo)
     }
 
+    const createPdf = () => {
+
+    }
+
     return (
         <View style={style.container}>
             <View style={{margin:1, flexDirection:'row', alignItems:'flex-end'}}>
@@ -157,6 +239,16 @@ const TransactionScreen = ({ navigation }) => {
                                 <Icon name="search" width="20" color="#ffffff"/>
                             </TouchableOpacity>
                         </View>
+                    </View>
+                </View>
+                <View style={{marginRight:10, marginLeft:5, marginVertical:5}}>
+                    <View>
+                        <Text style={{fontSize:10, color:'#34495e'}}>Report</Text>
+                    </View>
+                    <View style={{flexDirection:'row', marginTop:5}}>
+                        <TouchableOpacity style={{flexDirection:'row', height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#3498db', paddingHorizontal:10, paddingVertical:5}} onPress={() => createPDF()}>
+                            <Icon name="download" width="20" color="#ffffff"/>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>

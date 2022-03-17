@@ -12,6 +12,8 @@ target 'laundry_react' do
     :hermes_enabled => false
   )
 
+  pod 'react-native-html-to-pdf', :path => '../node_modules/react-native-html-to-pdf'
+
   target 'laundry_reactTests' do
     inherit! :complete
     # Pods for testing
